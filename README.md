@@ -4,52 +4,62 @@ A friendly chatbot for Grace Community Church that answers common visitor questi
 
 ## Features
 
-- **Conversational Q&A** — 30+ knowledge entries covering services, visits, family programs, pastoral care, sacraments, outreach, and more.
-- **Chat persistence** — every conversation is saved to Supabase and reloads on page refresh.
-- **Quick questions** — clickable suggestions for common queries.
-- **Responsive design** — works on mobile and desktop with a warm, church-themed UI.
+* **Conversational Q&A** — 30+ knowledge entries covering services, visits, family programs, pastoral care, sacraments, outreach, and more.
+* **Chat persistence** — every conversation is saved to Supabase and reloads on page refresh.
+* **Quick questions** — clickable suggestions for common queries.
+* **Responsive design** — works on mobile and desktop with a warm, church-themed UI.
 
 ## Tech Stack
 
-- **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, Lucide React icons
-- **Backend:** Supabase (Postgres database with Row Level Security)
+* **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, Lucide React icons
+* **Backend:** Supabase (Postgres database with Row Level Security)
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- A Supabase project (free tier works fine)
+* Node.js 18+
+* A Supabase project (free tier works fine)
 
 ### Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/church-chatbot.git
+   git clone [https://github.com/YOUR_USERNAME/church-chatbot.git](https://github.com/YOUR_USERNAME/church-chatbot.git)
    cd church-chatbot
-   ```
+
+```
 
 2. Install dependencies:
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+
+```
+
 
 3. Create a `.env` file based on the example:
-   ```bash
-   cp .env.example .env
-   ```
-   Then fill in your Supabase project URL and anon key:
-   ```
-   VITE_SUPABASE_URL=https://your-project.supabase.co
-   VITE_SUPABASE_ANON_KEY=your-anon-key
-   ```
+```bash
+cp .env.example .env
 
-4. Run the database migration. In your Supabase SQL editor, run the contents of `supabase/migrations/20260701003543_create_chat_messages_table.sql`. This creates the `chat_messages` table with Row Level Security enabled.
+```
 
-5. Start the dev server:
-   ```bash
-   npm run dev
-   ```
+
+4. Then fill in your Supabase project URL and anon key:
+```env
+VITE_SUPABASE_URL=[https://your-project.supabase.co](https://your-project.supabase.co)
+VITE_SUPABASE_ANON_KEY=your-anon-key
+
+```
+
+
+5. Run the database migration. In your Supabase SQL editor, run the contents of `supabase/migrations/20260701003543_create_chat_messages_table.sql`. This creates the `chat_messages` table with Row Level Security enabled.
+6. Start the dev server:
+```bash
+npm run dev
+
+```
+
+
 
 ## Customizing the Knowledge Base
 
@@ -57,14 +67,14 @@ The chatbot's answers are defined in `src/lib/knowledge.ts`. Each entry has keyw
 
 ## How It Works
 
-1. When a user sends a message, the chat engine (`src/lib/chatEngine.ts`) tokenizes the input, removes stop words, and scores each knowledge entry by keyword and question overlap.
-2. The best-scoring entry's answer is returned. If confidence is low, the bot offers the closest matches as suggestions instead of guessing.
-3. Both user and bot messages are persisted to the `chat_messages` table in Supabase, and prior history loads on page refresh.
+* When a user sends a message, the chat engine (`src/lib/chatEngine.ts`) tokenizes the input, removes stop words, and scores each knowledge entry by keyword and question overlap.
+* The best-scoring entry's answer is returned. If confidence is low, the bot offers the closest matches as suggestions instead of guessing.
+* Both user and bot messages are persisted to the `chat_messages` table in Supabase, and prior history loads on page refresh.
 
 ## Scripts
 
 | Command | Description |
-|---------|-------------|
+| --- | --- |
 | `npm run dev` | Start the dev server |
 | `npm run build` | Build for production |
 | `npm run typecheck` | Run TypeScript type checking |
@@ -74,3 +84,20 @@ The chatbot's answers are defined in `src/lib/knowledge.ts`. Each entry has keyw
 ## License
 
 This project is provided as-is for demonstration purposes.
+
+---
+
+## 🛠️ DevOps & Deployment Optimization (July 2026 Update)
+
+Successfully modernized, debugged, and deployed this application to a production-ready cloud hosting environment using modern CI/CD patterns.
+
+### Technical Engineering Accomplishments:
+
+* **Automated CI/CD Pipeline Architecture:** Formulated a custom GitHub Actions workflow (`deploy.yml`) utilizing **Node 24** to manage background environment builds, automated dependency mapping, and artifact hosting on every codebase push.
+* **Production Build Debugging & Integrity Auditing:** Resolved strict deployment configuration compilation errors (`exit code 1` and `JSONParseError`) by auditing and restructuring structural constraints inside `package.json` and asset paths within `vite.config.ts`.
+* **Sub-directory Routing Conflict Resolution:** Diagnosed and corrected absolute vs. relative routing path errors (404 asset failures) by mapping Vite's `base` directory parameter to align precisely with GitHub's sub-domain layout structure (`/church-chat-bot/`).
+* **Secure Environment Secret Management:** Safely migrated the pipeline build process to an active production cloud database configuration on **Supabase**. Securely mapped private runtime tokens (`VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`) by injecting encrypted environment keys straight into GitHub Repository Secrets, ensuring Zero-Trust visibility for client API data.
+
+```
+
+``'
