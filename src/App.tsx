@@ -12,6 +12,8 @@ import {
   Users,
   BookOpen,
   HandHeart,
+  Sun,
+  Moon,
   type LucideIcon,
 } from 'lucide-react';
 import { supabase, type ChatMessage, type ChatRole } from './lib/supabase';
@@ -45,7 +47,56 @@ function formatTime(iso: string): string {
   }
 }
 
+type Theme = 'light' | 'dark';
+
+function useTheme() {
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof document !== 'undefined' && document.documentElement.classList.contains('dark')) {
+      return 'dark';
+    }
+    return 'light';
+  });
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      const root = document.documentElement;
+      if (next === 'dark') root.classList.add('dark');
+      else root.classList.remove('dark');
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }, []);
+
+  return { theme, toggleTheme };
+}
+
+function ThemeToggle({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      className="relative inline-flex h-9 w-16 items-center rounded-full bg-stone-700/60 ring-1 ring-stone-500/40 px-1 transition-colors dark:bg-stone-200/15 dark:ring-stone-400/30"
+      role="switch"
+      aria-checked={theme === 'dark'}
+      aria-label="Toggle dark mode"
+    >
+      <span
+        className={`flex h-7 w-7 transform items-center justify-center rounded-full bg-white text-amber-500 shadow transition-transform duration-300 dark:bg-amber-400 dark:text-stone-900 ${
+          theme === 'dark' ? 'translate-x-7' : 'translate-x-0'
+        }`}
+      >
+        {theme === 'dark' ? <Moon className="h-4 w-4" strokeWidth={2} /> : <Sun className="h-4 w-4" strokeWidth={2} />}
+      </span>
+    </button>
+  );
+}
+
 function App() {
+  const { theme, toggleTheme } = useTheme();
   const [messages, setMessages] = useState<DisplayMessage[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -177,9 +228,9 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-800 flex flex-col">
+    <div className="min-h-screen bg-stone-50 text-stone-800 dark:bg-stone-950 dark:text-stone-100 flex flex-col transition-colors duration-300">
       {/* Header */}
-      <header className="sticky top-0 z-20 bg-gradient-to-r from-stone-800 to-stone-900 text-stone-50 shadow-lg">
+      <header className="sticky top-0 z-20 bg-gradient-to-r from-stone-800 to-stone-900 text-stone-50 dark:from-stone-900 dark:to-black dark:border-b dark:border-stone-800 shadow-lg transition-colors duration-300">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-full bg-amber-100/10 ring-1 ring-amber-200/30 flex items-center justify-center shrink-0">
@@ -194,13 +245,16 @@ function App() {
               </p>
             </div>
           </div>
-          <button
-            onClick={handleClearChat}
-            className="hidden sm:inline-flex items-center gap-2 text-sm text-stone-300 hover:text-amber-300 transition-colors px-3 py-1.5 rounded-full hover:bg-white/5"
-          >
-            <RefreshCw className="w-4 h-4" strokeWidth={1.75} />
-            New chat
-          </button>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
+            <button
+              onClick={handleClearChat}
+              className="hidden sm:inline-flex items-center gap-2 text-sm text-stone-300 hover:text-amber-300 transition-colors px-3 py-1.5 rounded-full hover:bg-white/5"
+            >
+              <RefreshCw className="w-4 h-4" strokeWidth={1.75} />
+              New chat
+            </button>
+          </div>
         </div>
       </header>
 
@@ -208,13 +262,13 @@ function App() {
       <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-col">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 flex-1">
           {/* Chat panel */}
-          <section className="flex flex-col bg-white rounded-2xl shadow-sm ring-1 ring-stone-200/70 overflow-hidden min-h-[60vh] lg:min-h-[calc(100vh-220px)]">
+          <section className="flex flex-col bg-white dark:bg-stone-900 rounded-2xl shadow-sm ring-1 ring-stone-200/70 dark:ring-stone-800 overflow-hidden min-h-[60vh] lg:min-h-[calc(100vh-220px)] transition-colors duration-300">
             <div
               ref={scrollRef}
-              className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-5 bg-stone-50/50"
+              className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-5 bg-stone-50/50 dark:bg-stone-900/50 transition-colors duration-300"
             >
               {loadingHistory && (
-                <div className="flex items-center justify-center gap-2 text-stone-400 text-sm py-8">
+                <div className="flex items-center justify-center gap-2 text-stone-400 dark:text-stone-500 text-sm py-8">
                   <RefreshCw className="w-4 h-4 animate-spin" strokeWidth={1.75} />
                   Loading conversation…
                 </div>
@@ -229,7 +283,7 @@ function App() {
             </div>
 
             {/* Input */}
-            <div className="border-t border-stone-200 bg-white px-4 sm:px-6 py-4">
+            <div className="border-t border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 px-4 sm:px-6 py-4 transition-colors duration-300">
               {error && (
                 <p className="text-xs text-amber-700 bg-amber-50 ring-1 ring-amber-200 rounded-lg px-3 py-2 mb-3">
                   {error}
@@ -243,7 +297,7 @@ function App() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask about service times, location, prayer requests…"
-                    className="w-full rounded-full border border-stone-300 bg-stone-50 px-5 py-3 pr-12 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 transition"
+                    className="w-full rounded-full border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 px-5 py-3 pr-12 text-sm text-stone-800 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 transition"
                     disabled={isTyping}
                     aria-label="Type your question"
                   />
@@ -257,9 +311,9 @@ function App() {
                   <Send className="w-5 h-5" strokeWidth={1.75} />
                 </button>
               </form>
-              <p className="text-[11px] text-stone-400 mt-2 text-center">
+              <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-2 text-center">
                 This assistant can help with common questions. For urgent pastoral care, call{' '}
-                <span className="font-medium text-stone-500">(319) 555-0142</span>.
+                <span className="font-medium text-stone-500 dark:text-stone-400">(319) 555-0142</span>.
               </p>
             </div>
           </section>
@@ -267,10 +321,10 @@ function App() {
           {/* Sidebar */}
           <aside className="space-y-4">
             {/* Quick questions */}
-            <div className="bg-white rounded-2xl shadow-sm ring-1 ring-stone-200/70 p-5">
+            <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm ring-1 ring-stone-200/70 dark:ring-stone-800 p-5 transition-colors duration-300">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="w-4 h-4 text-amber-500" strokeWidth={1.75} />
-                <h2 className="text-sm font-semibold text-stone-700">Quick questions</h2>
+                <h2 className="text-sm font-semibold text-stone-700 dark:text-stone-200">Quick questions</h2>
               </div>
               <div className="flex flex-col gap-2">
                 {SUGGESTED_QUESTIONS.map((q) => (
@@ -278,7 +332,7 @@ function App() {
                     key={q}
                     onClick={() => handleSuggestion(q)}
                     disabled={isTyping}
-                    className="text-left text-sm text-stone-600 px-3 py-2 rounded-lg bg-stone-50 hover:bg-amber-50 hover:text-amber-800 ring-1 ring-stone-200/60 hover:ring-amber-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-left text-sm text-stone-600 dark:text-stone-300 px-3 py-2 rounded-lg bg-stone-50 dark:bg-stone-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:text-amber-800 dark:hover:text-amber-300 ring-1 ring-stone-200/60 dark:ring-stone-700/60 hover:ring-amber-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {q}
                   </button>
@@ -287,7 +341,7 @@ function App() {
             </div>
 
             {/* Church info card */}
-            <div className="bg-gradient-to-br from-stone-800 to-stone-900 text-stone-100 rounded-2xl shadow-md p-5">
+            <div className="bg-gradient-to-br from-stone-800 to-stone-900 dark:from-stone-900 dark:to-black text-stone-100 dark:text-stone-200 rounded-2xl shadow-md p-5 ring-1 ring-stone-800 dark:ring-stone-800/80 transition-colors duration-300">
               <h2 className="text-sm font-semibold text-amber-300 mb-4 flex items-center gap-2">
                 <Church className="w-4 h-4" strokeWidth={1.75} />
                 Visit us
@@ -327,8 +381,8 @@ function App() {
             </div>
 
             {/* Ministry highlights */}
-            <div className="bg-white rounded-2xl shadow-sm ring-1 ring-stone-200/70 p-5">
-              <h2 className="text-sm font-semibold text-stone-700 mb-3">Our ministries</h2>
+            <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm ring-1 ring-stone-200/70 dark:ring-stone-800 p-5 transition-colors duration-300">
+              <h2 className="text-sm font-semibold text-stone-700 dark:text-stone-200 mb-3">Our ministries</h2>
               <div className="grid grid-cols-2 gap-3">
                 <MinistryTile icon={Users} label="Youth & Kids" />
                 <MinistryTile icon={BookOpen} label="Bible Studies" />
@@ -341,8 +395,8 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-stone-200 bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 text-center text-xs text-stone-400">
+      <footer className="border-t border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 transition-colors duration-300">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 text-center text-xs text-stone-400 dark:text-stone-500">
           {CHURCH_INFO.name} &middot; {CHURCH_INFO.tagline}
         </div>
       </footer>
@@ -372,12 +426,12 @@ function MessageBubble({ message }: { message: DisplayMessage }) {
           className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words ${
             isUser
               ? 'bg-stone-700 text-stone-50 rounded-tr-sm'
-              : 'bg-white text-stone-700 ring-1 ring-stone-200 rounded-tl-sm shadow-sm'
+              : 'bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-100 ring-1 ring-stone-200 dark:ring-stone-700 rounded-tl-sm shadow-sm'
           }`}
         >
           {message.content}
         </div>
-        <span className="text-[10px] text-stone-400 mt-1 px-1">
+        <span className="text-[10px] text-stone-400 dark:text-stone-500 mt-1 px-1">
           {formatTime(message.created_at)}
         </span>
       </div>
@@ -391,7 +445,7 @@ function TypingIndicator() {
       <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shrink-0 ring-1 ring-amber-300/50">
         <Church className="w-5 h-5 text-white" strokeWidth={1.75} />
       </div>
-      <div className="flex items-center gap-1.5 px-4 py-3.5 rounded-2xl rounded-tl-sm bg-white ring-1 ring-stone-200 shadow-sm">
+      <div className="flex items-center gap-1.5 px-4 py-3.5 rounded-2xl rounded-tl-sm bg-white dark:bg-stone-800 ring-1 ring-stone-200 dark:ring-stone-700 shadow-sm">
         <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: '0ms' }} />
         <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: '150ms' }} />
         <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -408,9 +462,9 @@ function MinistryTile({
   label: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 p-3 rounded-xl bg-stone-50 ring-1 ring-stone-200/60 text-center">
+    <div className="flex flex-col items-center gap-2 p-3 rounded-xl bg-stone-50 dark:bg-stone-800 ring-1 ring-stone-200/60 dark:ring-stone-700/60 text-center transition-colors duration-300">
       <Icon className="w-5 h-5 text-amber-600" strokeWidth={1.75} />
-      <span className="text-xs font-medium text-stone-600">{label}</span>
+      <span className="text-xs font-medium text-stone-600 dark:text-stone-300">{label}</span>
     </div>
   );
 }
