@@ -158,7 +158,7 @@ function App() {
     async (role: ChatRole, content: string): Promise<string | null> => {
       try {
         const { data, error: insertError } = await supabase
-          .from('chat_messages')
+          .from('Inquiries')
           .insert({ role, content })
           .select('id, created_at')
           .single();
