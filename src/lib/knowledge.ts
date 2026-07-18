@@ -239,7 +239,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
     keywords: ['coffee', ],
     question: 'Do you serve coffee?',
     answer:
-      "Yes! We are partnered with local coffee roasters to bring fresh coffee everysunday morning!",
+      "Yes! We are partnered with local coffee roasters to bring fresh coffee every Sunday morning!",
   },
   {
     id: 'thanks',
