@@ -234,6 +234,14 @@ export const knowledgeBase: KnowledgeEntry[] = [
       "Hello and welcome! I'm here to help answer any questions you might have about Grace Community Church. You can ask me about service times, our location, children's programs, prayer requests, or anything else. How can I help you today?",
   },
   {
+    id: 'coffee',
+    category: 'General',
+    keywords: ['coffee', ],
+    question: 'Do you serve coffee?',
+    answer:
+      "Yes! We are partnered with local coffee roaster to bring fresh coffee everysunday morning!",
+  },
+  {
     id: 'thanks',
     category: 'General',
     keywords: ['thank', 'thanks', 'thank you', 'appreciate', 'grateful', 'bless you'],
