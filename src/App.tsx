@@ -122,7 +122,7 @@ function App() {
     async function loadHistory() {
       try {
         const { data, error: queryError } = await supabase
-          .from('chat_messages')
+          .from('Inquiries')
           .select('id, role, content, created_at')
           .order('created_at', { ascending: true })
           .limit(50);
